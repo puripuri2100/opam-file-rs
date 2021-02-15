@@ -1,0 +1,263 @@
+use super::lexer;
+use super::value;
+
+grammar;
+
+extern {
+  enum lexer::Token {
+    Tok_EOF       => (lexer::TokenKind::EOF       , _, _),
+    Tok_STRING    => (lexer::TokenKind::STRING(_) , _, _),
+    Tok_IDENT     => (lexer::TokenKind::IDENT(_)  , _, _),
+    Tok_BOOL      => (lexer::TokenKind::BOOL(_)   , _, _),
+    Tok_INT       => (lexer::TokenKind::INT(_)    , _, _),
+    Tok_LBRACKET  => (lexer::TokenKind::LBRACKET  , _, _),
+    Tok_RBRACKET  => (lexer::TokenKind::RBRACKET  , _, _),
+    Tok_LPAR      => (lexer::TokenKind::LPAR      , _, _),
+    Tok_RPAR      => (lexer::TokenKind::RPAR      , _, _),
+    Tok_LBRACE    => (lexer::TokenKind::LBRACE    , _, _),
+    Tok_RBRACE    => (lexer::TokenKind::RBRACE    , _, _),
+    Tok_COLON     => (lexer::TokenKind::COLON     , _, _),
+    Tok_AND       => (lexer::TokenKind::AND       , _, _),
+    Tok_OR        => (lexer::TokenKind::OR        , _, _),
+    Tok_RELOP     => (lexer::TokenKind::RELOP(_)  , _, _),
+    Tok_PFXOP     => (lexer::TokenKind::PFXOP(_)  , _, _),
+    Tok_ENVOP     => (lexer::TokenKind::ENVOP(_)  , _, _),
+  }
+}
+
+pub main: value::OpamFile = {
+  <items: items> <_eof: Tok_EOF> => {
+    let mut v = items;
+    v.reverse();
+    value::OpamFile {file_contents: v}
+  },
+};
+
+
+items: Vec<value::OpamFileItem> = {
+  <item: item> <items: items> => {
+    let mut v = items;
+    v.push(item);
+    v
+  },
+  => Vec::new(),
+}
+
+
+item: value::OpamFileItem = {
+  <ident: Tok_IDENT> <_colon: Tok_COLON> <value: lorand> => {
+    let start_pos = ident.1;
+    let end_pos = value.pos.1;
+    let pos = (start_pos, end_pos);
+    let ident = lexer::get_value_string(ident.0).unwrap();
+    value::OpamFileItem::Variable(pos, ident, value)
+  },
+  <ident: Tok_IDENT> <_lbrace: Tok_LBRACE> <items: items> <rbrace: Tok_RBRACE> => {
+    let start_pos = ident.1;
+    let end_pos = rbrace.2;
+    let pos = (start_pos, end_pos);
+    let ident_kind = ident.0;
+    let ident_string = lexer::get_value_string(ident_kind).unwrap();
+    let sec_value =
+      value::OpamFileSection {
+        section_kind : ident_string,
+        section_name : None,
+        section_item : items,
+      };
+    value::OpamFileItem::Section(pos, sec_value)
+  },
+  <ident: Tok_IDENT> <string: Tok_STRING> <_lbrace: Tok_LBRACE> <items: items> <rbrace: Tok_RBRACE> => {
+    let start_pos = ident.1;
+    let end_pos = rbrace.2;
+    let pos = (start_pos, end_pos);
+    let ident_kind = ident.0;
+    let ident_string = lexer::get_value_string(ident_kind).unwrap();
+    let string_kind = string.0;
+    let string_string = lexer::get_value_string(string_kind).unwrap();
+    let sec_value =
+      value::OpamFileSection {
+        section_kind : ident_string,
+        section_name : Some(string_string),
+        section_item : items,
+      };
+    value::OpamFileItem::Section(pos, sec_value)
+  },
+}
+
+
+lorand: value::Value = {
+  <value1: lorand> <or: Tok_OR> <value2: value> => {
+    let start = value1.pos.0;
+    let end = value1.pos.1;
+    let logop = value::LogOp {
+      kind : value::LogOpKind::Or,
+      pos : (or.1, or.2),
+    };
+    value::Value {
+      pos : (start, end),
+      kind : value::ValueKind::LogOp(logop, Box::new(value1), Box::new(value2))
+    }
+  },
+  <value1: lorand> <and: Tok_AND> <value2: value> => {
+    let start = value1.pos.0;
+    let end = value1.pos.1;
+    let logop = value::LogOp {
+      kind : value::LogOpKind::And,
+      pos : (and.1, and.2),
+    };
+    value::Value {
+      pos : (start, end),
+      kind : value::ValueKind::LogOp(logop, Box::new(value1), Box::new(value2))
+    }
+  },
+  <value: value> => value,
+}
+
+
+
+value: value::Value = {
+  <atom: atom> => atom,
+  <lpar: Tok_LPAR> <values: values> <rpar: Tok_RPAR> => {
+    let start = lpar.1;
+    let end = rpar.2;
+    let mut v = values;
+    v.reverse();
+    value::Value {
+      pos : (start, end),
+      kind : value::ValueKind::Group(v)
+    }
+  },
+  <lpar: Tok_LBRACKET> <values: values> <rpar: Tok_RBRACKET> => {
+    let start = lpar.1;
+    let end = rpar.2;
+    let mut v = values;
+    v.reverse();
+    value::Value {
+      pos : (start, end),
+      kind : value::ValueKind::List(v)
+    }
+  },
+  <value: value> <_lpar: Tok_LBRACE> <values: values> <rpar: Tok_RBRACE> => {
+    let start = value.pos.0;
+    let end = rpar.2;
+    let mut values = values;
+    values.reverse();
+    value::Value {
+      pos : (start, end),
+      kind : value::ValueKind::Option(Box::new(value), values)
+    }
+  },
+  //<atom1: atom> <relop: Tok_RELOP> <atom2: atom> => {
+  //  let start = atom1.pos.0;
+  //  let end = atom2.pos.1;
+  //  let kind =
+  //    value::ValueKind::RelOp(
+  //      value::RelOp{
+  //        kind: lexer::get_value_relop(relop.0).unwrap(),
+  //        pos: (relop.1, relop.2)
+  //      },
+  //      Box::new(atom1),
+  //      Box::new(atom2)
+  //    );
+  //  value::Value {
+  //    pos : (start, end),
+  //    kind : kind
+  //  }
+  //},
+  <atom1: atom> <envop: Tok_ENVOP> <atom2: atom> => {
+    let start = atom1.pos.0;
+    let end = atom2.pos.1;
+    let kind =
+      value::ValueKind::EnvBinding(
+        Box::new(atom1),
+        value::EnvUpdateOp{
+          kind: lexer::get_value_env(envop.0).unwrap(),
+          pos: (envop.1, envop.2)
+        },
+        Box::new(atom2)
+      );
+    value::Value {
+      pos : (start, end),
+      kind
+    }
+  },
+  <pfxop: Tok_PFXOP> <atom: atom> => {
+    let start = pfxop.1;
+    let end = atom.pos.1;
+    let kind =
+      value::ValueKind::PfxOp(
+        value::PfxOp{
+          kind: lexer::get_value_pfxop(pfxop.0).unwrap(),
+          pos: (pfxop.1, pfxop.2)
+        },
+        Box::new(atom)
+      );
+    value::Value {
+      pos : (start, end),
+      kind
+    }
+  },
+  <relop: Tok_RELOP> <atom: atom> => {
+    let start = relop.1;
+    let end = atom.pos.1;
+    let kind =
+      value::ValueKind::PrefixRelOp(
+        value::RelOp{
+          kind: lexer::get_value_relop(relop.0).unwrap(),
+          pos: (relop.1, relop.2)
+        },
+        Box::new(atom)
+      );
+    value::Value {
+      pos : (start, end),
+      kind
+    }
+  },
+}
+
+
+values: Vec<value::Value> = {
+  <value: lorand> <values: values> => {
+    let mut v = values;
+    v.push(value);
+    v
+  },
+  => Vec::new(),
+}
+
+
+
+atom : value::Value = {
+  <b_tok: Tok_BOOL> => {
+    let kind = b_tok.0;
+    let b = lexer::get_value_bool(kind).unwrap();
+    value::Value {
+      pos : (b_tok.1, b_tok.2),
+      kind : value::ValueKind::Bool(b)
+    }
+  },
+  <i_tok: Tok_INT> => {
+    let kind = i_tok.0;
+    let i = lexer::get_value_isize(kind).unwrap();
+    value::Value {
+      pos : (i_tok.1, i_tok.2),
+      kind : value::ValueKind::Int(i)
+    }
+  },
+  <i_tok: Tok_IDENT> => {
+    let kind = i_tok.0;
+    let i = lexer::get_value_string(kind).unwrap();
+    value::Value {
+      pos : (i_tok.1, i_tok.2),
+      kind : value::ValueKind::Ident(i)
+    }
+  },
+  <s_tok: Tok_STRING> => {
+    let kind = s_tok.0;
+    let i = lexer::get_value_string(kind).unwrap();
+    value::Value {
+      pos : (s_tok.1, s_tok.2),
+      kind : value::ValueKind::String(i)
+    }
+  },
+}

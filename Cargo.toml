@@ -1,0 +1,17 @@
+[package]
+name = "opam-file-parser"
+version = "0.1.0"
+authors = ["puripuri2100 <puripuri2100@gmail.com>"]
+edition = "2018"
+build = "build.rs"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+lalrpop-util = "0.19.4"
+regex = "1.4.3"
+thiserror = "1.0.23"
+
+[build-dependencies]
+lalrpop = "0.19.4"
+
