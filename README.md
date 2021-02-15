@@ -7,9 +7,9 @@
 [![license badge][license-badge]][license]
 
 [crates]: https://crates.io/crates/opam-file-rs
-[crates-badge]: https://img.shields.io/crates/v/opam-file-rs?style=flat-square
+[crates-badge]: https://img.shields.io/crates/v/opam-file-rs
 [docs]: https://docs.rs/opam-file-rs/
-[docs-badge]: https://img.shields.io/badge/docs.rs-opam-file_rs-blue?style=flat-square
+[docs-badge]: https://img.shields.io/badge/docs.rs-opam-file_rs-blue
 [ci]: https://github.com/puripuri2100/opam-file-rs/actions?query=workflow%3ACI
 [ci-badge]: https://github.com/puripuri2100/opam-file-rs/workflows/CI/badge.svg?branch=master
 [source]: https://github.com/puripuri2100/opam-file-rs
