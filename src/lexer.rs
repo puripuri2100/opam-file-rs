@@ -278,7 +278,7 @@ fn lex_token(input: &[char], pos: usize) -> Result<(Vec<Token>, usize), LexError
         tokens.push(token);
         pos = new_pos;
       }
-      c if c.is_alphabetic() => {
+      c if c.is_ascii_alphabetic() => {
         let (token, new_pos) = lex_ident(input, pos);
         tokens.push(token);
         pos = new_pos;
@@ -472,7 +472,7 @@ fn lex_ident(input: &[char], pos: usize) -> (Token, usize) {
   let mut str = String::new();
   while pos < input.len() {
     let c = input[pos];
-    if c.is_alphabetic() || c.is_ascii_digit() || c == '_' || c == '-' {
+    if c.is_ascii_alphabetic() || c.is_ascii_digit() || c == '_' || c == '-' {
       str.push(c);
       pos += 1;
     } else {
