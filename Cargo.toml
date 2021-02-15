@@ -1,5 +1,5 @@
 [package]
-name = "opam-file-parser"
+name = "opam-file-rs"
 version = "0.1.0"
 authors = ["Naoki Kaneko <puripuri2100@gmail.com>"]
 edition = "2018"
