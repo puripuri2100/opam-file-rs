@@ -114,6 +114,7 @@ pub enum EnvUpdateOpKind {
 
 pub type Pos = (usize, usize);
 
+/// Convert to an OPAM file format.
 pub fn format_opam_file(input: &OpamFile) -> String {
   let file_contents = &input.file_contents;
   opam_file_item_vec_to_string(file_contents)

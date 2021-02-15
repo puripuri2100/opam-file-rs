@@ -44,7 +44,7 @@ fn main () {
 
 # Convert to a OPAM file format.
 
-A data structure can be converted to a OPAM file format by `value::format_opam_file`.
+A data structure can be converted to an OPAM file format by `value::format_opam_file`.
 
 ```rust
 use opam_file_rs;
