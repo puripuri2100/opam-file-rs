@@ -23,7 +23,7 @@
 //!
 //! Parse OPAM file.
 //!
-//! ```rust
+//! ```rust, ignore
 //! use opam_file_rs;
 //! fn main () {
 //!   let opam = r#"
@@ -46,7 +46,7 @@
 //!
 //! A data structure can be converted to an OPAM file format by `value::format_opam_file`.
 //!
-//! ```rust
+//! ```rust, ignore
 //! use opam_file_rs;
 //! fn main() {
 //!   let opam_str = r#"
