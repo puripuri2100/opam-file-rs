@@ -1,4 +1,4 @@
-//! # opam-file-rs: JSON library for Rust
+//! # opam-file-rs: Parser and printer for the opam file syntax with Rust
 //!
 //! [![crates.io][crates-badge]][crates]
 //! [![docs.rs][docs-badge]][docs]
