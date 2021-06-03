@@ -27,7 +27,7 @@ Parse OPAM file.
 use opam_file_rs;
 fn main () {
   let opam = r#"
-    opam-verion: "2.0"
+    opam-version: "2.0"
     version: "0.1.0"
     name: "opam-file-rs"
     dev-repo: "git+https://github.com/puripuri2100/opam-file-rs"
@@ -50,7 +50,7 @@ A data structure can be converted to an OPAM file format by `value::format_opam_
 use opam_file_rs;
 fn main() {
   let opam_str = r#"
-    opam-verion: "2.0"
+    opam-version: "2.0"
     version: "0.1.0"
     name: "opam-file-rs"
     dev-repo: "git+https://github.com/puripuri2100/opam-file-rs"
