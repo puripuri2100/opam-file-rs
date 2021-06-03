@@ -1,7 +1,6 @@
-use crate::value::*;
-
 #[test]
 fn check_parse() {
+  use crate::value::*;
   let opam_str = r#"
     opam-version: "2.0"
     depends: [
