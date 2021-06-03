@@ -8,7 +8,7 @@ license = "MIT"
 readme = "README.md"
 repository = "https://github.com/puripuri2100/opam-file-rs"
 keywords = ["ocaml", "opam", "parser"]
-categories = ["Encoding", "Parser implementations"]
+categories = ["encoding", "parser-implementations"]
 description = "Parser and printer for the opam file syntax with Rust"
 exclude = ["tests/*", ".github/*", "target/*"]
 
