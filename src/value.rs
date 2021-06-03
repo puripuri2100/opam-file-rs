@@ -27,14 +27,29 @@ pub enum ValueKind {
   Bool(bool),
   Int(isize),
   String(String),
+  /// RelOp: `=`, `!=`, `>=`, `<`, `<=`, `~`
+  /// BNF: `<filter> <relop> <filter>`
   RelOp(RelOp, Box<Value>, Box<Value>),
+  /// RelOp: `=`, `!=`, `>=`, `<`, `<=` and `~`
+  /// BNF: `<relop> <version>`, `<relop> <filter>`
+  /// Example: `"foo" {>= "1.1.0"}`
   PrefixRelOp(RelOp, Box<Value>),
+  /// PfxOp: `&`, `|`
+  /// BNF: `<version-formula> <logop> <version-formula>`, `<filter> <logop> <filter>`, ...
+  /// Example: `"bar" {>= "1.1.0" & < "2.0.0"}`
   LogOp(LogOp, Box<Value>, Box<Value>),
+  /// PfxOp: `!`, `?`
+  /// BNF: `"!" <filter>`, `"?" <filter>`
   PfxOp(PfxOp, Box<Value>),
   Ident(String),
+  /// BNF: `"[" <value>* "]"`
   List(Vec<Value>),
+  /// BNF: `"(" <value>* ")"`
   Group(Vec<Value>),
+  /// BNF: `<value> "{" <value>* "}"`
+  /// Example: `"baz" { "build" }`
   Option(Box<Value>, Vec<Value>),
+  /// EnvUpdateOp: `+=`, `=+`, `:=`, `=:`. `=+=`
   EnvBinding(Box<Value>, EnvUpdateOp, Box<Value>),
 }
 

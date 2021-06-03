@@ -5,16 +5,19 @@
 [![Build Status][ci-badge]][ci]
 [![source badge][source-badge]][source]
 [![license badge][license-badge]][license]
+
 [crates]: https://crates.io/crates/opam-file-rs
 [crates-badge]: https://img.shields.io/crates/v/opam-file-rs
 [docs]: https://docs.rs/opam-file-rs/
-[docs-badge]: https://img.shields.io/badge/docs.rs-opam-file_rs-blue
+[docs-badge]: https://img.shields.io/badge/docs.rs-opam_file_rs-blue
 [ci]: https://github.com/puripuri2100/opam-file-rs/actions?query=workflow%3ACI
 [ci-badge]: https://github.com/puripuri2100/opam-file-rs/workflows/CI/badge.svg?branch=master
 [source]: https://github.com/puripuri2100/opam-file-rs
 [source-badge]: https://img.shields.io/badge/source-github-blue
 [license]: https://github.com/puripuri2100/opam-file-rs/blob/master/LICENSE
 [license-badge]: https://img.shields.io/badge/license-MIT-blue
+
+
 # Parsing OPAM
 Parse OPAM file.
 ```rust, ignore
