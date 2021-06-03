@@ -1,6 +1,6 @@
 [package]
 name = "opam-file-rs"
-version = "0.1.2"
+version = "0.1.4"
 authors = ["Naoki Kaneko <puripuri2100@gmail.com>"]
 edition = "2018"
 build = "build.rs"
@@ -10,7 +10,7 @@ repository = "https://github.com/puripuri2100/opam-file-rs"
 keywords = ["ocaml", "opam", "parser"]
 categories = ["Encoding", "Parser implementations"]
 description = "Parser and printer for the opam file syntax with Rust"
-exclude = ["tests/*", ".github/*"]
+exclude = ["tests/*", ".github/*", "target/*"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
